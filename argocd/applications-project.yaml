@@ -12,3 +12,7 @@ spec:
   destinations:
   - namespace: "*"
     server: https://kubernetes.default.svc
+  # Allow cluster-scoped resources (CRDs, ClusterRoles, etc.) needed by CSI driver
+  clusterResourceWhitelist:
+  - group: '*'
+    kind: '*'

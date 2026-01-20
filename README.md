@@ -669,7 +669,7 @@ kubectl create namespace argocd
 kubectl apply -f k8s/manifests/argocd/argocd-tls.yaml
 
 # Install ArgoCD using Helm with custom values
-helm install argocd argo/argo-cd \
+helm upgrade -i argocd argo/argo-cd \
   --namespace argocd \
   --values helm/argocd/values.yaml
 
@@ -684,6 +684,21 @@ kubectl wait --for=condition=available deployment/argocd-server \
 # The TLS secret is defined in k8s/manifests/argocd/argocd-tls.yaml
 # and should be applied with kubectl before running helm install
 ```
+
+**Note for Local Development:** If you want to access ArgoCD via ingress (instead of port-forward), you need to add the hostname to `/etc/hosts`:
+
+```bash
+# For Docker Desktop
+echo "127.0.0.1 argocd.example.com" | sudo tee -a /etc/hosts
+
+# For Minikube
+echo "$(minikube ip) argocd.example.com" | sudo tee -a /etc/hosts
+
+# Verify the entry
+grep "argocd.example.com" /etc/hosts
+```
+
+This allows you to access ArgoCD at `https://argocd.example.com` (the hostname configured in the Helm values).
 
 ### Access ArgoCD UI
 
