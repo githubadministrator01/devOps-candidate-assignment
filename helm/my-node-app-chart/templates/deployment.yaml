@@ -24,6 +24,19 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: {{ .Values.service.port }}
+          {{- if .Values.secretsStore.syncAsKubernetesSecret.enabled }}
+          env:
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secretsStore.syncAsKubernetesSecret.secretName }}
+                  key: DATABASE_PASSWORD
+            - name: API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secretsStore.syncAsKubernetesSecret.secretName }}
+                  key: API_KEY
+          {{- end }}
           resources:
 {{- toYaml .Values.resources | nindent 12 }}
           {{- if .Values.livenessProbe.enabled }}

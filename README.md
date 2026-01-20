@@ -62,13 +62,51 @@ This is the **core feature** of the assignment. Here's how it works:
    - Application reloads the secret from disk
    - **No pod restart required!**
 
-#### Why Files Instead of Environment Variables?
+#### Two Approaches for Secret Injection
 
-**Environment variables cannot be updated at runtime** in Kubernetes. Once a pod starts, its environment variables are immutable. To achieve dynamic secret updates without pod restarts, we use:
+This project demonstrates **both** approaches for injecting secrets from Azure Key Vault:
 
-- **CSI Driver with file mounting** - secrets are mounted as files
-- **File system watching** - Node.js watches the file for changes
-- **Automatic reload** - application reads the latest value on each request or file change
+##### 1. **File-Mounted Secrets (Hot Reload) ✨**
+
+Used for: `my-secret`
+
+**How it works:**
+- CSI Driver mounts secrets as files at `/mnt/secrets-store/`
+- Application uses `fs.watch()` to detect file changes
+- Secrets update **without pod restart**
+
+**Advantages:**
+- ✅ Dynamic updates (hot reload)
+- ✅ No downtime
+- ✅ Secrets rotate automatically
+
+**Use cases:**
+- Secrets that change frequently
+- Rotating credentials
+- Feature flags stored as secrets
+
+##### 2. **Environment Variables (K8s Secret Sync)**
+
+Used for: `DATABASE_PASSWORD`, `API_KEY`
+
+**How it works:**
+- CSI Driver syncs Azure Key Vault secrets to a Kubernetes Secret
+- Pod references the Kubernetes Secret via `envFrom` or `env`
+- Secrets are injected as environment variables
+
+**Advantages:**
+- ✅ Standard Kubernetes pattern
+- ✅ Works with legacy apps expecting env vars
+- ✅ Simpler application code
+
+**Limitations:**
+- ⚠️ Requires pod restart to update
+- ⚠️ Not suitable for dynamic rotation
+
+**Use cases:**
+- Database connection strings
+- API keys that rarely change
+- Third-party service credentials
 
 ---
 
@@ -178,14 +216,25 @@ az keyvault create \
   --enable-rbac-authorization true
 ```
 
-#### 1.3 Create a Secret
+#### 1.3 Create Secrets
 
 ```bash
-# Create initial secret
+# 1. File-mounted secret (for hot reload demonstration)
 az keyvault secret set \
   --vault-name $KEYVAULT_NAME \
   --name my-secret \
   --value "initial-secret-value-v1"
+
+# 2. Environment variable secrets (synced to Kubernetes Secret)
+az keyvault secret set \
+  --vault-name $KEYVAULT_NAME \
+  --name database-password \
+  --value "super-secret-db-password"
+
+az keyvault secret set \
+  --vault-name $KEYVAULT_NAME \
+  --name api-key \
+  --value "my-api-key-12345"
 ```
 
 **Note**: You may need to assign yourself the "Key Vault Secrets Officer" role to create secrets:
@@ -788,17 +837,39 @@ The [`.github/workflows/ci.yaml`](.github/workflows/ci.yaml) pipeline automatica
    - Installs dependencies (`npm ci`)
    - Runs Jest tests (`npm test`)
 
-2. **Security Scanning**
-   - Builds Docker image locally
-   - Scans with Trivy for vulnerabilities
-   - **Fails the pipeline** if CRITICAL or HIGH vulnerabilities are found
-   - Only proceeds to publish if scan passes
-
-3. **Publish Phase**
-   - Authenticates with GitHub Container Registry (ghcr.io)
-   - Pushes Docker image with two tags:
+2. **Publish Phase**
+   - Authenticates with GitHub Container Registry (ghcr.io) using Personal Access Token
+   - Builds and pushes multi-architecture Docker image (linux/amd64, linux/arm64)
+   - Publishes Docker image with two tags:
      - `ghcr.io/YOUR_USERNAME/node-app:COMMIT_SHA`
      - `ghcr.io/YOUR_USERNAME/node-app:latest`
+
+3. **Security Scanning**
+   - Scans published image with Trivy for vulnerabilities
+   - **Fails the pipeline** if CRITICAL vulnerabilities are found
+   - Authenticated scanning using Personal Access Token
+
+### Prerequisites for CI/CD Pipeline
+
+The pipeline requires a Personal Access Token (PAT) with `write:packages` permission:
+
+1. **Create Personal Access Token**:
+   - Go to: `https://github.com/settings/tokens?type=beta`
+   - Click **Generate new token** (Fine-grained token)
+   - Configure:
+     - **Token name**: `PACKAGE_TOKEN`
+     - **Repository access**: Select `devOps-candidate-assignment`
+     - **Permissions** → **Repository permissions**:
+       - Contents: Read
+       - Packages: Read and write
+   - Click **Generate token** and copy it
+
+2. **Add Token to Repository Secrets**:
+   - Go to: `https://github.com/YOUR_USERNAME/devOps-candidate-assignment/settings/secrets/actions`
+   - Click **New repository secret**
+   - Name: `PACKAGE_TOKEN`
+   - Value: Paste your token
+   - Click **Add secret**
 
 ### How to Use the Automation
 

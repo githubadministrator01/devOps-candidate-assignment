@@ -61,6 +61,10 @@ registryCreds:
 secretsStore:
   enabled: true
   mountPath: /mnt/secrets-store
+  # Enable syncing secrets to Kubernetes Secret for env vars
+  syncAsKubernetesSecret:
+    enabled: true
+    secretName: app-secrets-from-keyvault
   secretProviderClass:
     name: azure-keyvault
     provider: azure
@@ -72,5 +76,13 @@ secretsStore:
         name: azure-kv-creds
         key: clientSecret
     objects:
+      # File-mounted secret (for hot reload)
       - objectName: my-secret
         objectType: secret
+      # Environment variable secret (synced to k8s secret)
+      - objectName: database-password
+        objectType: secret
+        objectAlias: DATABASE_PASSWORD
+      - objectName: api-key
+        objectType: secret
+        objectAlias: API_KEY
