@@ -39,26 +39,27 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       # Build image locally (NO PUSH)
-      - name: Build Docker image
+      - name: Build and push multi-arch image
         uses: docker/build-push-action@v5
         with:
           context: ./app
           file: ./app/Dockerfile
-          platforms: linux/amd64,linux/arm64  # Build for both architectures
-          load: true
-          tags: ghcr.io/${{ github.repository_owner }}/node-app:${{ github.sha }}
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/node-app:${{ github.sha }}
+            ghcr.io/${{ github.repository_owner }}/node-app:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
       # Trivy scan BEFORE push
-      - name: Scan Docker image with Trivy
+      - name: Scan image with Trivy
         uses: aquasecurity/trivy-action@0.20.0
         with:
           image-ref: ghcr.io/${{ github.repository_owner }}/node-app:${{ github.sha }}
           format: table
+          severity: CRITICAL
           exit-code: 1
-          vuln-type: 'os,library'
-          severity: 'CRITICAL'
 
       # Login only if scan passes
       - name: Login to GitHub Container Registry
