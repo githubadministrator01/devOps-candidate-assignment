@@ -797,8 +797,8 @@ The [`.github/workflows/ci.yaml`](.github/workflows/ci.yaml) pipeline automatica
 3. **Publish Phase**
    - Authenticates with GitHub Container Registry (ghcr.io)
    - Pushes Docker image with two tags:
-     - `ghcr.io/YOUR_USERNAME/my-node-app:COMMIT_SHA`
-     - `ghcr.io/YOUR_USERNAME/my-node-app:latest`
+     - `ghcr.io/YOUR_USERNAME/node-app:COMMIT_SHA`
+     - `ghcr.io/YOUR_USERNAME/node-app:latest`
 
 ### How to Use the Automation
 
