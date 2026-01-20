@@ -5,9 +5,9 @@ nameOverride: ""
 fullnameOverride: ""
 
 image:
-  repository: dockeradmin01/my-node-app   # change this to your registry/repo
-  tag: v2-hotreload
-  pullPolicy: Always
+  repository: ghcr.io/githubadministrator01/node-app   # change this to your registry/repo
+  tag: 39f9430d2440e559548d28cfc1808145a2b98502
+  pullPolicy: IfNotPresent
 
 service:
   type: ClusterIP
