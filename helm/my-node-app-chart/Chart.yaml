@@ -1,0 +1,11 @@
+apiVersion: v2
+name: nodejs
+description: A simple Node.js app Helm chart
+type: application
+version: 0.1.1
+appVersion: "1.0.0"
+keywords:
+  - devops
+  - azure
+  - keyvault
+  - microservice

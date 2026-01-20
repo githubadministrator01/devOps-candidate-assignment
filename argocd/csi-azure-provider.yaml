@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: csi-azure-provider
+  namespace: argocd
+spec:
+  project: applications
+  source:
+    repoURL: https://github.com/githubadministrator01/devOps-candidate-assignment.git
+    targetRevision: main
+    path: k8s/manifests/csi-azure-provider
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kube-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=false

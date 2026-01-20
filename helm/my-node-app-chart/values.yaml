@@ -1,0 +1,76 @@
+replicaCount: 1
+
+# optional overrides
+nameOverride: ""
+fullnameOverride: ""
+
+image:
+  repository: dockeradmin01/my-node-app   # change this to your registry/repo
+  tag: v2-hotreload
+  pullPolicy: Always
+
+service:
+  type: ClusterIP
+  port: 3000
+
+resources:
+  limits:
+    cpu: 200m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+livenessProbe:
+  enabled: true
+  path: /health
+  initialDelaySeconds: 10
+  periodSeconds: 10
+  timeoutSeconds: 2
+  failureThreshold: 3
+  successThreshold: 1
+
+readinessProbe:
+  enabled: true
+  path: /health
+  initialDelaySeconds: 5
+  periodSeconds: 5
+  timeoutSeconds: 2
+  failureThreshold: 3
+  successThreshold: 1
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+  hosts:
+    - host: node-app.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: my-node-app-tls
+      hosts:
+        - node-app.example.com
+
+registryCreds:
+  secretName: ghcr-secret
+
+secretsStore:
+  enabled: true
+  mountPath: /mnt/secrets-store
+  secretProviderClass:
+    name: azure-keyvault
+    provider: azure
+    azure:
+      keyvaultName: my-keysvault
+      tenantId: "45640dcd-de2a-4c01-834f-da0b7e997044"
+      clientId: "65cd92ff-d492-4ea1-9b83-df7aac26fdfc"
+      clientSecretRef:
+        name: azure-kv-creds
+        key: clientSecret
+    objects:
+      - objectName: my-secret
+        objectType: secret

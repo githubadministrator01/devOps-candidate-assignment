@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>My Simple Node.js App</title>
+</head>
+<body>
+  <h1>🚀 Welcome to My Node.js App</h1>
+  <p>This page is served by Express.</p>
+  <button onclick="fetchHello()">Say Hello</button>
+
+  <script>
+    async function fetchHello() {
+      const res = await fetch("/api/hello");
+      const data = await res.json();
+      alert(data.message);
+    }
+  </script>
+</body>
+</html>

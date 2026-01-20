@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Secret
+type: kubernetes.io/dockerconfigjson
+metadata:
+  name: ghcr-secret
+  namespace: apps
+data:
+  .dockerconfigjson: eyJhdXRocyI6eyJnaGNyLmlvIjp7InVzZXJuYW1lIjoiZ2l0aHViYWRtaW5pc3RyYXRvcjAxIiwicGFzc3dvcmQiOiJnaHBfN0NDek1TQVhOenBqQTdud1BHSlJScllqMXNJR0FsMUVBVE9yIiwiYXV0aCI6IloybDBhSFZpWVdSdGFXNXBjM1J5WVhSdmNqQXhPbWRvY0Y4M1EwTjZUVk5CV0U1NmNHcEJOMjUzVUVkS1VsSnlXV294YzBsSFFXd3hSVUZVVDNJPSJ9fX0=

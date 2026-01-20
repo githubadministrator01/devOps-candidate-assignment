@@ -1,0 +1,31 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: my-node-app
+  namespace: argocd
+spec:
+  project: applications
+
+  # Source of your application (Helm chart)
+  source:
+    repoURL: https://github.com/githubadministrator01/devOps-candidate-assignment.git  # replace with your repo
+    targetRevision: main
+    path: helm/my-node-app-chart
+    helm:
+      releaseName: my-app
+      valueFiles:
+        - values.yaml
+
+  # Destination cluster and namespace
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: apps
+
+  # Sync policy
+  syncPolicy:
+    automated:
+      prune: true          # delete resources that are removed from Helm chart
+      selfHeal: true       # auto-correct drift  
+    syncOptions:
+      - PruneLast=true     # prune resources in the last step
+      - CreateNamespace=true  # automatically create namespace if missing

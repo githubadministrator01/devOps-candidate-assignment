@@ -1,0 +1,121 @@
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+.npm
+.eslintcache
+
+# Testing
+coverage/
+.nyc_output
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Secrets and credentials (DO NOT COMMIT)
+*.key
+*.pem
+*.p12
+*.pfx
+secrets/
+credentials/
+
+# Azure credentials
+azure.json
+sp-credentials.json
+
+# Kubernetes secrets
+*-secret.yaml
+*-creds.yaml
+# But keep example/template files
+!*-secret.yaml.example
+!*-creds.yaml.example
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Linux
+*~
+.directory
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+*.sublime-workspace
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.bak
+*.cache
+
+# Build outputs
+dist/
+build/
+*.tar
+*.tar.gz
+*.zip
+
+# Helm
+*.tgz
+charts/*.tgz
+
+# Terraform (if used)
+.terraform/
+*.tfstate
+*.tfstate.*
+.terraform.lock.hcl
+
+# ArgoCD admin password (don't commit)
+argocd-admin-password.txt
+
+# Local kubeconfig
+kubeconfig
+*.kubeconfig
+
+# Certificate files (keep templates)
+*.crt
+*.csr
+!*.crt.example
+# Keep the wildcard cert for local development
+!k8s/tls/wildcard-tls.crt
+
+# Private keys (NEVER commit)
+*.key
+!*.key.example
+
+# Docker
+.dockerignore
+
+# Misc
+.cache/
